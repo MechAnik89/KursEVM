@@ -16,11 +16,11 @@ int memory[N] = { ALLOWED, ALLOWED, ALLOWED };
 int tacts[N] = { 0,0,0,0,0 };
 void programm_set(string str);
 void programm_get();
-int mem_req(int request, int num);
-int mem_req(int request);
-void commutator(string str);
-int calculate();
-void pci(string str);
+int Memory_Request(int request, int num);
+int Memory_Request(int request);
+void Commutator(string str);
+int Calculate_Tacts();
+void PCI(string str);
 void process(int m);
 int main() {
 	setlocale(LC_ALL, "Rus");
@@ -79,7 +79,7 @@ void programm_get(string str)
 	}
 	out.close();
 }
-int mem_req(int request, int num)
+int Memory_Request(int request, int num)
 {
 	ACCESS = memory[num - 1];
 	if (ACCESS == ALLOWED && request == REQUEST)
@@ -98,7 +98,7 @@ int mem_req(int request, int num)
 	memory[num - 1] = ALLOWED;
 	return ACCESS;
 }
-int mem_req(int request)
+int Memory_Request(int request)
 {
 	if (ACCESS == ALLOWED && request == REQUEST)
 	{
@@ -110,7 +110,7 @@ int mem_req(int request)
 	}
 	return ACCESS;
 }
-void commutator(string str)
+void Commutator(string str)
 {
 	std::ofstream out(str, std::ios::trunc);
 	out.open("Коммутатор.txt");
@@ -126,7 +126,7 @@ void commutator(string str)
 				out << "\nrequest " << programm[id - 1][i] << "\t\tid " << id;
 				while (true)
 				{
-					access = mem_req(REQUEST, programm[id - 1][i]);
+					access = Memory_Request(REQUEST, programm[id - 1][i]);
 					if (access == ACCESSED)
 					{
 						out << "\naccess " <<
@@ -139,7 +139,7 @@ void commutator(string str)
 						out << "\nWaiting " << programm[id - 1][i] << "\t\tid " << id;
 						tacts[id - 1] += 200 * flag[id - 1];
 						flag[id - 1]++;
-						mem_req(FREEING, programm[id - 1][i]);
+						Memory_Request(FREEING, programm[id - 1][i]);
 					}
 				}
 			}
@@ -154,12 +154,12 @@ void commutator(string str)
 			memory[i] = ALLOWED;
 		}
 	}
-	int tacts = calculate();
+	int tacts = Calculate_Tacts();
 	out << "\nNumber of tacts: " << tacts / 50 << endl << endl <<
 		endl;
 	out.close();
 }
-void pci(string str)
+void PCI(string str)
 {
 	std::ofstream out(str, std::ios::trunc);
 	out.open("Шина.txt");
@@ -175,7 +175,7 @@ void pci(string str)
 					<< "\t\tid " << id;
 				while (true)
 				{
-					access = mem_req(REQUEST);
+					access = Memory_Request(REQUEST);
 					if (access == ACCESSED)
 					{
 						out << "\nAccess " <<
@@ -189,7 +189,7 @@ void pci(string str)
 						flag++;
 						out << "\nWaiting " <<
 							programm[id - 1][i] << "\t\tid " << id;
-						mem_req(FREEING);
+						Memory_Request(FREEING);
 					}
 				}
 			}
@@ -201,11 +201,11 @@ void pci(string str)
 		ACCESS = ALLOWED;
 		flag = 1;
 	}
-	int tacts = calculate();
+	int tacts = Calculate_Tacts();
 	out << "\nNumber of tacts: " << tacts / 50 << endl << endl;
 	out.close();
 }
-int calculate() {
+int Calculate_Tacts() {
 	int time = 0;
 	for (int i = 0; i < 10; ++i) {
 		if (tacts[i] > time) {
@@ -233,8 +233,8 @@ void process(int m)
 			str3 = "results/" + to_string(M) + "/Kr=" + to_string(Kr) + "/Pn = " + to_string(Pn) + "/Коммутатор.txt";
 			programm_set();
 			programm_get(str1);
-			pci(str2);
-			commutator(str3);
+			PCI(str2);
+			Commutator(str3);
 		}
 	}
 }
